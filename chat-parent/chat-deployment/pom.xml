@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.ruse.uni.chat</groupId>
+		<artifactId>chat-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>org.ruse.uni.chat.deployment</groupId>
+	<artifactId>chat-deployment</artifactId>
+	<packaging>war</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.ruse.uni.chat.core</groupId>
+			<artifactId>chat-core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>dom4j</artifactId>
+					<groupId>dom4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<outputFileNameMapping>@{groupId}@-@{artifactId}@.@{extension}@</outputFileNameMapping>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.wildfly.plugins</groupId>
+				<artifactId>wildfly-maven-plugin</artifactId>
+				<version>1.0.2.Final</version>
+				<configuration>
+					<hostname>${wildfly-hostname}</hostname>
+					<port>${wildfly-port}</port>
+					<username>${wildfly-username}</username>
+					<password>${wildfly-password}</password>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
