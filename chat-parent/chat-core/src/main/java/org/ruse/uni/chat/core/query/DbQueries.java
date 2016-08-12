@@ -16,6 +16,6 @@ public interface DbQueries {
 	String GET_USER_BY_EMAIL_QUERY = "SELECT auser FROM chat_user auser WHERE auser.email = :email";
 
 	String VALIDATE_CREDENTIALS_NAME = "VALIDATE_CREDENTIALS";
-	String VALIDATE_CREDENTIALS_QUERY = "SELECT auser FROM chat_user auser WHERE auser.username = :username AND auser.password = :password";
+	String VALIDATE_CREDENTIALS_QUERY = "SELECT u FROM chat_user u WHERE u.username = :username AND u.password = :password";
 
 }

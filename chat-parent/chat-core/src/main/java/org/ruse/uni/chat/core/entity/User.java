@@ -1,10 +1,14 @@
 package org.ruse.uni.chat.core.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.ruse.uni.chat.core.entity.converters.PasswordHashConverter;
 import org.ruse.uni.chat.core.query.DbQueries;
@@ -36,6 +40,18 @@ public class User extends BaseEntity {
 	@Column(nullable = false, length = 44)
 	@Convert(converter = PasswordHashConverter.class)
 	private String password;
+
+	@Column(nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date registeredOn;
+
+	public Date getRegisteredOn() {
+		return registeredOn;
+	}
+
+	public void setRegisteredOn(Date registeredOn) {
+		this.registeredOn = registeredOn;
+	}
 
 	/**
 	 * Getter method for username.
@@ -111,6 +127,15 @@ public class User extends BaseEntity {
 	 */
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(100);
+		builder.append("User [id=").append(getId()).append(", username=").append(username).append(", email=")
+				.append(email).append(", name=").append(name).append(", registeredOn=").append(registeredOn)
+				.append("]");
+		return builder.toString();
 	}
 
 }
