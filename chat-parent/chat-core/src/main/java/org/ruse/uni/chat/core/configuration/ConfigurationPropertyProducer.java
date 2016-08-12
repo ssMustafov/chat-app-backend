@@ -4,6 +4,8 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
+import org.ruse.uni.chat.core.exceptions.ChatRuntimeException;
+
 /**
  *
  * @author sinan
@@ -20,7 +22,7 @@ public class ConfigurationPropertyProducer {
 		String value = fileResolver.getProperty(propertyName);
 
 		if (value == null || propertyName.trim().length() == 0) {
-			throw new IllegalArgumentException("No property found with name " + value);
+			throw new ChatRuntimeException("No configuration property found with name " + value);
 		}
 		return value;
 	}

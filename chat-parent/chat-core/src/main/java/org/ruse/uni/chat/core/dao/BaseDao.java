@@ -6,13 +6,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.ruse.uni.chat.core.entity.BaseEntity;
 
 /**
- * Base dao for persistence. Contains methods for base operations like save,
- * update, remove and etc. Successors must implement their specific operations
- * itselfs.
+ * Base dao for persistence. Contains methods for base operations like save, update, remove and etc. Successors must
+ * implement their specific operations itselfs.
  *
  * @author sinan
  */
@@ -24,12 +25,12 @@ public abstract class BaseDao<E extends BaseEntity> {
 	private EntityManager entityManager;
 
 	/**
-	 * Persists the instance into the db. The instance will be new row in the
-	 * table.
+	 * Persists the instance into the db. The instance will be new row in the table.
 	 *
 	 * @param instance
 	 *            the instance
 	 */
+	@Transactional(TxType.REQUIRED)
 	public void save(E instance) {
 		entityManager.persist(instance);
 	}
@@ -81,10 +82,9 @@ public abstract class BaseDao<E extends BaseEntity> {
 	}
 
 	/**
-	 * Updates the given instance. Beware that the returned instance is the
-	 * updated. The passed instance will not be updated. The recommended way to
-	 * update the instance is just to copy its properties, JPA will handle the
-	 * update itself.
+	 * Updates the given instance. Beware that the returned instance is the updated. The passed instance will not be
+	 * updated. The recommended way to update the instance is just to copy its properties, JPA will handle the update
+	 * itself.
 	 *
 	 * @param instance
 	 *            the instance to update

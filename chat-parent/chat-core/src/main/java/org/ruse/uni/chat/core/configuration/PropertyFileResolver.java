@@ -11,6 +11,8 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
+import org.ruse.uni.chat.core.exceptions.ChatRuntimeException;
+
 /**
  *
  * @author sinan
@@ -19,7 +21,7 @@ import javax.inject.Singleton;
 public class PropertyFileResolver {
 
 	private static final String PROPERTY_FILE_NAME = "configuration.properties";
-	private Map<Object, Object> propertiesMap;
+	private Map<Object, Object> propertiesCache;
 
 	@PostConstruct
 	private void init() {
@@ -28,10 +30,10 @@ public class PropertyFileResolver {
 		try (InputStream inputStream = new FileInputStream(getPropertyFile())) {
 			properties.load(inputStream);
 		} catch (IOException e) {
-			System.out.println("Unable to load properties file" + e);
+			throw new ChatRuntimeException("Unable to load properties file", e);
 		}
 
-		propertiesMap = Collections.unmodifiableMap(properties);
+		propertiesCache = Collections.unmodifiableMap(properties);
 	}
 
 	private static File getPropertyFile() {
@@ -41,7 +43,7 @@ public class PropertyFileResolver {
 	}
 
 	public String getProperty(String key) {
-		return propertiesMap.get(key).toString();
+		return propertiesCache.get(key).toString();
 	}
 
 }

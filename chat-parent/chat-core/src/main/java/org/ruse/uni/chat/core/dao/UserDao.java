@@ -2,8 +2,10 @@ package org.ruse.uni.chat.core.dao;
 
 import java.util.List;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.ruse.uni.chat.core.entity.User;
 import org.ruse.uni.chat.core.query.DbQueries;
@@ -12,10 +14,11 @@ import org.ruse.uni.chat.core.query.DbQueries;
  *
  * @author sinan
  */
-@Stateless
+@ApplicationScoped
 public class UserDao extends BaseDao<User> {
 
 	@Override
+	@Transactional(TxType.REQUIRED)
 	public User update(User user) {
 		User updated = findById(User.class, user.getId());
 		updated.setPassword(user.getPassword());
