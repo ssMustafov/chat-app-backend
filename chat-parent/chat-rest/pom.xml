@@ -6,16 +6,13 @@
 		<artifactId>chat-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.ruse.uni.chat.security</groupId>
-	<artifactId>chat-security</artifactId>
-
+	<groupId>org.ruse.uni.chat.rest</groupId>
+	<artifactId>chat-rest</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>org.ruse.uni.chat.core</groupId>
 			<artifactId>chat-core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
-		
 	</dependencies>
 </project>

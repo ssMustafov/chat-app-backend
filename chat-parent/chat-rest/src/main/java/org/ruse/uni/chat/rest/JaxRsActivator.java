@@ -1,4 +1,4 @@
-package org.ruse.uni.chat.core.rest;
+package org.ruse.uni.chat.rest;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

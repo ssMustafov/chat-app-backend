@@ -1,4 +1,4 @@
-package org.ruse.uni.chat.core.rest.filters;
+package org.ruse.uni.chat.rest.filters;
 
 import java.io.IOException;
 

@@ -27,6 +27,16 @@
 			<artifactId>chat-websocket</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.ruse.uni.chat.security</groupId>
+			<artifactId>chat-security</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ruse.uni.chat.rest</groupId>
+			<artifactId>chat-rest</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
