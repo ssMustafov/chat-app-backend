@@ -22,7 +22,7 @@ import org.ruse.uni.chat.core.configuration.ConfigurationProperty;
 public class AESCryptographyService implements CryptographyService {
 
 	@Inject
-	@ConfigurationProperty(name = "secret.key")
+	@ConfigurationProperty(name = "security.secret.key")
 	private String secretKeyPropertyValue;
 
 	private SecretKeySpec secretKey;

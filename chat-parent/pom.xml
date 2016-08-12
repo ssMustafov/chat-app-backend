@@ -59,6 +59,7 @@
 		<module>chat-core</module>
 		<module>chat-deployment</module>
 		<module>chat-websocket</module>
+		<module>chat-security</module>
 	</modules>
 
 </project>
