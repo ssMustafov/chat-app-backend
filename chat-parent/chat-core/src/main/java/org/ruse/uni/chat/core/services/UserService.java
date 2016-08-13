@@ -1,5 +1,6 @@
 package org.ruse.uni.chat.core.services;
 
+import org.ruse.uni.chat.core.security.PasswordCredential;
 import org.ruse.uni.chat.core.security.SecureUser;
 
 /**
@@ -8,7 +9,7 @@ import org.ruse.uni.chat.core.security.SecureUser;
  */
 public interface UserService {
 
-	void register(SecureUser user);
+	void register(SecureUser user, PasswordCredential credential);
 
 	SecureUser validateCredentials(String username, String password);
 
