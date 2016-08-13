@@ -46,7 +46,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			validateToken(token);
 		} catch (Exception e) {
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("message", "Unauthenticated");
+			jsonObject.put("message", e.getMessage());
 			requestContext
 					.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity(jsonObject.toString()).build());
 		}

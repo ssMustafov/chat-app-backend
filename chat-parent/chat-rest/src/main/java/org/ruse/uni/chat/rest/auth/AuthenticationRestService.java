@@ -3,7 +3,6 @@ package org.ruse.uni.chat.rest.auth;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -45,7 +44,7 @@ public class AuthenticationRestService {
 
 			JSONObject json = new JSONObject();
 			json.put("auth_key", token);
-			json.put("message", "Success");
+			json.put("message", "success");
 
 			userAuthenticatedEvent.fire(new UserAuthenticatedEvent(secureUser));
 
@@ -76,19 +75,13 @@ public class AuthenticationRestService {
 		try {
 			registerInternal(credentials);
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("message", "Success");
+			jsonObject.put("message", "success");
 			return Response.ok(jsonObject.toString()).build();
 		} catch (Exception e) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("message", e.getMessage());
 			return Response.status(Status.BAD_REQUEST).entity(jsonObject.toString()).build();
 		}
-	}
-
-	@GET
-	@Path("/echo")
-	public Response echo() {
-		return Response.ok("{\"echo\":\"ok\"}").build();
 	}
 
 	private void registerInternal(Credentials credentials) {
