@@ -1,18 +1,25 @@
 package org.ruse.uni.chat.core.crypto;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.invoke.MethodHandles;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.jboss.logging.Logger;
 import org.ruse.uni.chat.core.configuration.ConfigurationProperty;
+import org.ruse.uni.chat.core.exceptions.ChatRuntimeException;
 
 /**
  *
@@ -20,6 +27,8 @@ import org.ruse.uni.chat.core.configuration.ConfigurationProperty;
  */
 @Singleton
 public class AESCryptographyService implements CryptographyService {
+
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Inject
 	@ConfigurationProperty(name = "security.secret.key")
@@ -30,7 +39,7 @@ public class AESCryptographyService implements CryptographyService {
 	@PostConstruct
 	public void init() {
 		setKey(secretKeyPropertyValue);
-		System.out.println("Secret key loaded successfully!!!");
+		LOGGER.info("Secret key loaded successfully");
 	}
 
 	private void setKey(String myKey) {
@@ -42,9 +51,9 @@ public class AESCryptographyService implements CryptographyService {
 			key = Arrays.copyOf(key, 16); // use only first 128 bit
 			secretKey = new SecretKeySpec(key, "AES");
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			LOGGER.error("Wrong algorithm for crypting", e);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -57,10 +66,11 @@ public class AESCryptographyService implements CryptographyService {
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
 			return Base64.getEncoder().encodeToString(cipher.doFinal(local.getBytes("UTF-8")));
-		} catch (Exception e) {
-			System.out.println("Error while encrypting: " + e.toString());
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
+				| BadPaddingException | UnsupportedEncodingException e) {
+			LOGGER.errorf("Can't encrypt: {}", e.getMessage());
+			throw new ChatRuntimeException("Unable to encrypt", e);
 		}
-		return null;
 	}
 
 	@Override
@@ -71,10 +81,11 @@ public class AESCryptographyService implements CryptographyService {
 
 			cipher.init(Cipher.DECRYPT_MODE, secretKey);
 			return new String(cipher.doFinal(Base64.getDecoder().decode(local)));
-		} catch (Exception e) {
-			System.out.println("Error while decrypting: " + e.toString());
+		} catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException
+				| NoSuchPaddingException e) {
+			LOGGER.errorf("Can't decrypt: {}", e.getMessage());
+			throw new ChatRuntimeException("Unable to decrypt", e);
 		}
-		return null;
 	}
 
 }

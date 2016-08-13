@@ -9,6 +9,10 @@ import javax.ws.rs.ext.Provider;
 import org.ruse.uni.chat.rest.annotations.PublicRest;
 import org.ruse.uni.chat.rest.filters.AuthenticationFilter;
 
+/**
+ *
+ * @author sinan
+ */
 @Provider
 public class PublicRestFeature implements DynamicFeature {
 
