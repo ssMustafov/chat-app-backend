@@ -43,12 +43,7 @@ public class AuthenticationRestService {
 			String token = issueToken(secureUser);
 
 			JSONObject json = new JSONObject();
-			JSONObject userJson = new JSONObject();
-			userJson.put("username", secureUser.getUsername());
-			userJson.put("name", secureUser.getName());
-			userJson.put("email", secureUser.getEmail());
-			json.put("auth_token", token);
-			json.put("user", userJson);
+			json.put("auth_key", token);
 			json.put("message", "success");
 
 			userAuthenticatedEvent.fire(new UserAuthenticatedEvent(secureUser));
