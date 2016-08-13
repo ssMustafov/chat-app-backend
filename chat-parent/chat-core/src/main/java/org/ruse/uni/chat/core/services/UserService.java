@@ -1,6 +1,6 @@
 package org.ruse.uni.chat.core.services;
 
-import org.ruse.uni.chat.core.entity.User;
+import org.ruse.uni.chat.core.security.SecureUser;
 
 /**
  *
@@ -8,9 +8,9 @@ import org.ruse.uni.chat.core.entity.User;
  */
 public interface UserService {
 
-	void register(User user);
+	void register(SecureUser user);
 
-	User validateCredentials(String username, String password);
+	SecureUser validateCredentials(String username, String password);
 
 	boolean isUsernameTaken(String username);
 

@@ -9,7 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.ruse.uni.chat.core.configuration.ConfigurationProperty;
-import org.ruse.uni.chat.security.User;
+import org.ruse.uni.chat.core.security.SecureUser;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -30,12 +30,12 @@ public class JwtGenerator {
 		jwtKey = new SecretKeySpec(Base64.getEncoder().encode(jwtSigningKeyConfiguration.getBytes()), "HmacSHA256");
 	}
 
-	public String generate(User user) {
+	public String generate(SecureUser user) {
 		return Jwts.builder().setSubject(user.getUsername()).setIssuer(user.getEmail())
 				.setIssuedAt(user.getRegisteredOn()).signWith(SignatureAlgorithm.HS512, jwtKey).compact();
 	}
 
-	public User parse(String jwt) {
+	public SecureUser parse(String jwt) {
 		Jws<Claims> parsedClaimsJws = Jwts.parser().setSigningKey(jwtKey).parseClaimsJws(jwt);
 		Claims claims = parsedClaimsJws.getBody();
 
@@ -43,7 +43,7 @@ public class JwtGenerator {
 		user.setEmail(claims.getIssuer());
 		user.setUsername(claims.getSubject());
 		user.setRegisteredOn(claims.getIssuedAt());
-		return new User(user);
+		return new SecureUser(user);
 	}
 
 }
