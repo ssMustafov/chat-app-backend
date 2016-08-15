@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 	private UserDao userDao;
 
 	@Override
-	public void register(SecureUser user, PasswordCredential credential) {
+	public SecureUser register(SecureUser user, PasswordCredential credential) {
 		if (user.getEmail() == null || user.getEmail().isEmpty()) {
 			throw new ChatRuntimeException("Email cannot be empty");
 		}
@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
 		User converted = SecurityUtil.convertSecureUsertToEntity(user, credential);
 		converted.setRegisteredOn(new Date());
 		userDao.save(converted);
+		return SecurityUtil.convertEntityToSecureUser(converted);
 	}
 
 	@Override
@@ -59,6 +60,24 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean isEmailTaken(String email) {
 		return userDao.findByEmail(email) != null;
+	}
+
+	@Override
+	public SecureUser getById(Long id) {
+		User user = userDao.findById(id);
+		return SecurityUtil.convertEntityToSecureUser(user);
+	}
+
+	@Override
+	public SecureUser getByUsername(String username) {
+		User user = userDao.findByUsername(username);
+		return SecurityUtil.convertEntityToSecureUser(user);
+	}
+
+	@Override
+	public SecureUser getByEmail(String email) {
+		User user = userDao.findByEmail(email);
+		return SecurityUtil.convertEntityToSecureUser(user);
 	}
 
 }

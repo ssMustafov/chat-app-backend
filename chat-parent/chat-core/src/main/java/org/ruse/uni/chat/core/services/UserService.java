@@ -9,12 +9,18 @@ import org.ruse.uni.chat.core.security.SecureUser;
  */
 public interface UserService {
 
-	void register(SecureUser user, PasswordCredential credential);
+	SecureUser register(SecureUser user, PasswordCredential credential);
 
 	SecureUser validateCredentials(String username, String password);
 
 	boolean isUsernameTaken(String username);
 
 	boolean isEmailTaken(String email);
+
+	SecureUser getById(Long id);
+
+	SecureUser getByUsername(String username);
+
+	SecureUser getByEmail(String email);
 
 }

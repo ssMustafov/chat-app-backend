@@ -2,10 +2,15 @@ package org.ruse.uni.chat.rest.auth;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -40,15 +45,10 @@ public class AuthenticationRestService {
 	public Response authenticate(Credentials credentials) {
 		try {
 			SecureUser secureUser = authenticateInternal(credentials);
-			String token = issueToken(secureUser);
-
-			JSONObject json = new JSONObject();
-			json.put("auth_key", token);
-			json.put("message", "success");
 
 			userAuthenticatedEvent.fire(new UserAuthenticatedEvent(secureUser));
 
-			return Response.ok(json.toString()).build();
+			return Response.ok(generateToken(secureUser).toString()).build();
 		} catch (AuthenticationException e) {
 			JSONObject json = new JSONObject();
 			json.put("message", e.getMessage());
@@ -68,15 +68,30 @@ public class AuthenticationRestService {
 		return jwtGenerator.generate(user);
 	}
 
+	@GET
+	@Path("/me")
+	public Response currentUser(@Context HttpHeaders headers) {
+		String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+		String token = authorizationHeader.substring("Bearer".length()).trim();
+		SecureUser currentUser = userService.getByUsername(jwtGenerator.parse(token).getUsername());
+
+		JSONObject userJson = new JSONObject();
+		userJson.put("username", currentUser.getUsername());
+		userJson.put("email", currentUser.getEmail());
+		userJson.put("id", currentUser.getId());
+		userJson.put("name", currentUser.getName());
+		userJson.put("registeredOn", currentUser.getRegisteredOn());
+		return Response.ok(userJson.toString()).build();
+	}
+
 	@POST
 	@PublicRest
 	@Path("/register")
+	@Transactional(TxType.REQUIRED)
 	public Response register(Credentials credentials) {
 		try {
-			registerInternal(credentials);
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("message", "success");
-			return Response.ok(jsonObject.toString()).build();
+			SecureUser user = registerInternal(credentials);
+			return Response.ok(generateToken(user).toString()).build();
 		} catch (Exception e) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("message", e.getMessage());
@@ -84,9 +99,18 @@ public class AuthenticationRestService {
 		}
 	}
 
-	private void registerInternal(Credentials credentials) {
+	private JSONObject generateToken(SecureUser user) {
+		String token = issueToken(user);
+		JSONObject json = new JSONObject();
+		json.put("auth_key", token);
+		json.put("message", "success");
+		return json;
+	}
+
+	private SecureUser registerInternal(Credentials credentials) {
 		User user = createUser(credentials);
-		userService.register(SecurityUtil.convertEntityToSecureUser(user), createPasswordCredential(credentials));
+		return userService.register(SecurityUtil.convertEntityToSecureUser(user),
+				createPasswordCredential(credentials));
 	}
 
 	private static User createUser(Credentials credentials) {
