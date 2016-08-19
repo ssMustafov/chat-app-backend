@@ -1,11 +1,15 @@
 package org.ruse.uni.chat.websocket;
 
+import javax.inject.Inject;
+
 import org.atmosphere.config.service.Disconnect;
 import org.atmosphere.config.service.ManagedService;
 import org.atmosphere.config.service.Message;
 import org.atmosphere.config.service.Ready;
 import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.AtmosphereResourceEvent;
+import org.atmosphere.cpr.AtmosphereResourceFactory;
+import org.ruse.uni.chat.websocket.services.WebSocketService;
 
 /**
  * @author sinan
@@ -13,8 +17,16 @@ import org.atmosphere.cpr.AtmosphereResourceEvent;
 @ManagedService(path = "/chat")
 public class ChatEndpoint {
 
+	@Inject
+	private AtmosphereResourceFactory resourceFactory;
+
+	@Inject
+	private WebSocketService webSocketService;
+
 	@Ready
 	public void onReady(AtmosphereResource resource) {
+		webSocketService.initializeSocket(resourceFactory, resource);
+
 		System.out.println("Browser connected: " + resource.uuid());
 	}
 
