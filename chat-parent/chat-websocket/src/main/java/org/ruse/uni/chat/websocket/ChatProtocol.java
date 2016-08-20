@@ -2,17 +2,17 @@ package org.ruse.uni.chat.websocket;
 
 import java.util.Date;
 
-public final class ChatMessage {
+public class ChatProtocol {
 
 	private String message;
 	private String author;
 	private long time;
 
-	public ChatMessage() {
+	public ChatProtocol() {
 		this("", "");
 	}
 
-	public ChatMessage(String author, String message) {
+	public ChatProtocol(String author, String message) {
 		this.author = author;
 		this.message = message;
 		this.time = new Date().getTime();

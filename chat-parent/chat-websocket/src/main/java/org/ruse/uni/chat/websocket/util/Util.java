@@ -37,4 +37,10 @@ public class Util {
 		return null;
 	}
 
+	public static String getRoomId(AtmosphereResource resource) {
+		String roomPath = resource.getBroadcaster().getID();
+		int lastIndexOf = roomPath.lastIndexOf("/");
+		return roomPath.substring(lastIndexOf + 1);
+	}
+
 }

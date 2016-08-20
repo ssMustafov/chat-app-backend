@@ -7,12 +7,12 @@ import org.json.JSONObject;
  *
  * @author sinan
  */
-public class ChatMessageDecoder implements Decoder<String, ChatMessage> {
+public class ChatProtocolDecoder implements Decoder<String, ChatProtocol> {
 
 	@Override
-	public ChatMessage decode(String s) {
+	public ChatProtocol decode(String s) {
 		JSONObject json = new JSONObject(s);
-		ChatMessage message = new ChatMessage();
+		ChatProtocol message = new ChatProtocol();
 		message.setAuthor(json.getString("author"));
 		message.setMessage(json.getString("message"));
 		return message;

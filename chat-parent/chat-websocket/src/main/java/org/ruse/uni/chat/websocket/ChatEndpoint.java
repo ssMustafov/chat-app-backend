@@ -6,15 +6,18 @@ import org.atmosphere.config.service.Disconnect;
 import org.atmosphere.config.service.ManagedService;
 import org.atmosphere.config.service.Message;
 import org.atmosphere.config.service.Ready;
+import org.atmosphere.config.service.Singleton;
 import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.AtmosphereResourceEvent;
 import org.atmosphere.cpr.AtmosphereResourceFactory;
 import org.ruse.uni.chat.websocket.services.WebSocketService;
+import org.ruse.uni.chat.websocket.util.Util;
 
 /**
  * @author sinan
  */
-@ManagedService(path = "/chat")
+@Singleton
+@ManagedService(path = "/chat/{room: [0-9]+}")
 public class ChatEndpoint {
 
 	@Inject
@@ -26,7 +29,7 @@ public class ChatEndpoint {
 	@Ready
 	public void onReady(AtmosphereResource resource) {
 		webSocketService.initializeSocket(resourceFactory, resource);
-
+		System.out.println("Room id: " + Util.getRoomId(resource));
 		System.out.println("Browser connected: " + resource.uuid());
 	}
 
@@ -39,9 +42,8 @@ public class ChatEndpoint {
 		}
 	}
 
-	@Message(encoders = { ChatMessageEncoder.class }, decoders = { ChatMessageDecoder.class })
-	public ChatMessage onMessage(ChatMessage message) {
-		System.out.println(message.getAuthor() + " just send: " + message.getMessage());
+	@Message(encoders = { ChatProtocolEncoder.class }, decoders = { ChatProtocolDecoder.class })
+	public ChatProtocol onMessage(ChatProtocol message) {
 		return message;
 	}
 

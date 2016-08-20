@@ -7,10 +7,10 @@ import org.json.JSONObject;
  *
  * @author sinan
  */
-public class ChatMessageEncoder implements Encoder<ChatMessage, String> {
+public class ChatProtocolEncoder implements Encoder<ChatProtocol, String> {
 
 	@Override
-	public String encode(ChatMessage message) {
+	public String encode(ChatProtocol message) {
 		JSONObject json = new JSONObject();
 		json.put("author", message.getAuthor());
 		json.put("time", message.getTime());
