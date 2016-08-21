@@ -10,11 +10,11 @@ import org.json.JSONObject;
 public class ChatProtocolEncoder implements Encoder<ChatProtocol, String> {
 
 	@Override
-	public String encode(ChatProtocol message) {
+	public String encode(ChatProtocol protocol) {
 		JSONObject json = new JSONObject();
-		json.put("author", message.getAuthor());
-		json.put("time", message.getTime());
-		json.put("message", message.getMessage());
+		json.put("user", protocol.getUser().toJson());
+		json.put("receivedDate", protocol.getReceivedDate().getTime());
+		json.put("data", protocol.getData());
 		return json.toString();
 	}
 

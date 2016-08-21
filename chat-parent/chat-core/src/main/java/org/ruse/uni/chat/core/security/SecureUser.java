@@ -2,6 +2,7 @@ package org.ruse.uni.chat.core.security;
 
 import java.util.Date;
 
+import org.json.JSONObject;
 import org.ruse.uni.chat.core.entity.User;
 
 /**
@@ -17,12 +18,41 @@ public class SecureUser {
 	private String email;
 	private Date registeredOn;
 
+	public static final SecureUser SYSTEM_USER;
+
+	static {
+		User user = new User();
+		user.setName("System User");
+		user.setUsername("system");
+		SYSTEM_USER = new SecureUser(user);
+	}
+
 	public SecureUser(User user) {
 		id = user.getId();
 		username = user.getUsername();
 		name = user.getName();
 		email = user.getEmail();
 		registeredOn = user.getRegisteredOn();
+	}
+
+	public JSONObject toJson() {
+		JSONObject json = new JSONObject();
+		json.put("id", id);
+		json.put("username", username);
+		json.put("name", name);
+		json.put("email", email);
+		json.put("registeredOn", registeredOn.getTime());
+		return json;
+	}
+
+	public static SecureUser parseFromJson(JSONObject json) {
+		User user = new User();
+		user.setId(json.getLong("id"));
+		user.setUsername(json.getString("username"));
+		user.setName(json.getString("name"));
+		user.setEmail(json.getString("email"));
+		user.setRegisteredOn(new Date(json.getLong("registeredOn")));
+		return SecurityUtil.convertEntityToSecureUser(user);
 	}
 
 	@Override

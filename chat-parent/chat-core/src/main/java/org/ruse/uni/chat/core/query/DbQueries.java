@@ -6,6 +6,7 @@ package org.ruse.uni.chat.core.query;
  */
 public interface DbQueries {
 
+	// user
 	String GET_ALL_USERS_NAME = "GET_ALL_USERS";
 	String GET_ALL_USERS_QUERY = "SELECT auser FROM chat_user auser";
 
@@ -17,5 +18,12 @@ public interface DbQueries {
 
 	String VALIDATE_CREDENTIALS_NAME = "VALIDATE_CREDENTIALS";
 	String VALIDATE_CREDENTIALS_QUERY = "SELECT u FROM chat_user u WHERE u.username = :username AND u.password = :password";
+
+	// room
+	String GET_ALL_ROOMS_NAME = "GET_ALL_ROOMS";
+	String GET_ALL_ROOMS_QUERY = "SELECT room FROM chat_room room";
+
+	String GET_ROOMS_FOR_USER_NAME = "GET_ROOMS_FOR_USER";
+	String GET_ROOMS_FOR_USER_QUERY = "SELECT room FROM chat_room room INNER JOIN room.users uid WHERE uid = :user ";
 
 }

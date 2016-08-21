@@ -21,6 +21,11 @@ public class SecurityUtil {
 		return user;
 	}
 
+	public static SecureUser getSystemUser() {
+
+		return null;
+	}
+
 	public static SecureUser convertEntityToSecureUser(User user) {
 		return new SecureUser(user);
 	}

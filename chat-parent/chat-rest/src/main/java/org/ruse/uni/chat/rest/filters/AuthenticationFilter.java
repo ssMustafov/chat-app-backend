@@ -1,6 +1,7 @@
 package org.ruse.uni.chat.rest.filters;
 
 import java.io.IOException;
+import java.security.Principal;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -11,6 +12,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.json.JSONObject;
 import org.ruse.uni.chat.core.security.SecureUser;
@@ -43,7 +45,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		String token = authorizationHeader.substring("Bearer".length()).trim();
 
 		try {
-			validateToken(token);
+			SecureUser user = validateToken(token);
+			requestContext.setSecurityContext(new ChatSecurityContext(user));
 		} catch (Exception e) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("message", e.getMessage());
@@ -52,12 +55,52 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-	private void validateToken(String token) {
+	private SecureUser validateToken(String token) {
 		SecureUser parsed = jwtGenerator.parse(token);
 		if (parsed == null || !userService.isEmailTaken(parsed.getEmail())
 				|| !userService.isUsernameTaken(parsed.getUsername())) {
 			throw new AuthenticationException("Invalid token");
 		}
+		return parsed;
+	}
+
+	private class ChatSecurityContext implements SecurityContext {
+
+		private SecureUser user;
+
+		public ChatSecurityContext(SecureUser user) {
+			this.user = user;
+		}
+
+		@Override
+		public Principal getUserPrincipal() {
+			return new Principal() {
+
+				@Override
+				public String getName() {
+					return user.getUsername();
+				}
+			};
+		}
+
+		@Override
+		public boolean isUserInRole(String role) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isSecure() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public String getAuthenticationScheme() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 	}
 
 }

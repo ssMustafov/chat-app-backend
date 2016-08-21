@@ -46,8 +46,6 @@ public class AuthenticationRestService {
 		try {
 			SecureUser secureUser = authenticateInternal(credentials);
 
-			userAuthenticatedEvent.fire(new UserAuthenticatedEvent(secureUser));
-
 			return Response.ok(generateToken(secureUser).toString()).build();
 		} catch (AuthenticationException e) {
 			JSONObject json = new JSONObject();
@@ -57,11 +55,11 @@ public class AuthenticationRestService {
 	}
 
 	private SecureUser authenticateInternal(Credentials credentials) {
-		SecureUser user = userService.validateCredentials(credentials.getUsername(), credentials.getPassword());
+		User user = userService.validateCredentials(credentials.getUsername(), credentials.getPassword());
 		if (user == null) {
 			throw new AuthenticationException("Not existing user with that credentials");
 		}
-		return user;
+		return SecurityUtil.convertEntityToSecureUser(user);
 	}
 
 	private String issueToken(SecureUser user) {
@@ -73,15 +71,10 @@ public class AuthenticationRestService {
 	public Response currentUser(@Context HttpHeaders headers) {
 		String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
 		String token = authorizationHeader.substring("Bearer".length()).trim();
-		SecureUser currentUser = userService.getByUsername(jwtGenerator.parse(token).getUsername());
+		User currentUser = userService.getByUsername(jwtGenerator.parse(token).getUsername());
+		SecureUser user = SecurityUtil.convertEntityToSecureUser(currentUser);
 
-		JSONObject userJson = new JSONObject();
-		userJson.put("username", currentUser.getUsername());
-		userJson.put("email", currentUser.getEmail());
-		userJson.put("id", currentUser.getId());
-		userJson.put("name", currentUser.getName());
-		userJson.put("registeredOn", currentUser.getRegisteredOn());
-		return Response.ok(userJson.toString()).build();
+		return Response.ok(user.toJson().toString()).build();
 	}
 
 	@POST
@@ -104,13 +97,16 @@ public class AuthenticationRestService {
 		JSONObject json = new JSONObject();
 		json.put("auth_key", token);
 		json.put("message", "success");
+
+		userAuthenticatedEvent.fire(new UserAuthenticatedEvent(user));
+
 		return json;
 	}
 
 	private SecureUser registerInternal(Credentials credentials) {
 		User user = createUser(credentials);
-		return userService.register(SecurityUtil.convertEntityToSecureUser(user),
-				createPasswordCredential(credentials));
+		user = userService.register(user, createPasswordCredential(credentials));
+		return SecurityUtil.convertEntityToSecureUser(user);
 	}
 
 	private static User createUser(Credentials credentials) {

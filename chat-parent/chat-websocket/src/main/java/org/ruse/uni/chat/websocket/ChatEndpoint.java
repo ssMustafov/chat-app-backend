@@ -26,9 +26,10 @@ public class ChatEndpoint {
 	@Inject
 	private WebSocketService webSocketService;
 
-	@Ready
+	@Ready(encoders = { ChatProtocolEncoder.class })
 	public void onReady(AtmosphereResource resource) {
 		webSocketService.initializeSocket(resourceFactory, resource);
+
 		System.out.println("Room id: " + Util.getRoomId(resource));
 		System.out.println("Browser connected: " + resource.uuid());
 	}
@@ -43,8 +44,9 @@ public class ChatEndpoint {
 	}
 
 	@Message(encoders = { ChatProtocolEncoder.class }, decoders = { ChatProtocolDecoder.class })
-	public ChatProtocol onMessage(ChatProtocol message) {
-		return message;
+	public ChatProtocol onMessage(ChatProtocol protocol) {
+		System.out.println(protocol);
+		return protocol;
 	}
 
 }

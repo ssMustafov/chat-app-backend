@@ -50,8 +50,8 @@ public class AESCryptographyService implements CryptographyService {
 
 	@Override
 	public String encrypt(String strToEncrypt) {
-		String local = strToEncrypt.trim();
 		try {
+			String local = strToEncrypt.trim();
 			Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey);

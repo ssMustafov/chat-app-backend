@@ -1,44 +1,60 @@
 package org.ruse.uni.chat.websocket;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class ChatProtocol {
+import org.ruse.uni.chat.core.security.SecureUser;
 
-	private String message;
-	private String author;
-	private long time;
+/**
+ * @author sinan
+ */
+public class ChatProtocol implements Serializable {
+
+	private static final long serialVersionUID = 7930914755052800396L;
+	private String data;
+	private SecureUser user;
+	private Date receivedDate;
 
 	public ChatProtocol() {
-		this("", "");
+		// default
 	}
 
-	public ChatProtocol(String author, String message) {
-		this.author = author;
-		this.message = message;
-		this.time = new Date().getTime();
+	public ChatProtocol(SecureUser user, String data, Date receivedDate) {
+		this.user = user;
+		this.receivedDate = receivedDate;
+		this.data = data;
 	}
 
-	public String getMessage() {
-		return message;
+	public Date getReceivedDate() {
+		return receivedDate;
 	}
 
-	public String getAuthor() {
-		return author;
+	public void setReceivedDate(Date receivedDate) {
+		this.receivedDate = receivedDate;
 	}
 
-	public void setAuthor(String author) {
-		this.author = author;
+	public String getData() {
+		return data;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setData(String data) {
+		this.data = data;
 	}
 
-	public long getTime() {
-		return time;
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(256);
+		builder.append("ChatProtocol [").append("user=").append(user).append(", receivedDate=").append(receivedDate)
+				.append(", data=").append((data == null || data.isEmpty() ? "NULL" : "NOT_NULL")).append("]");
+		return builder.toString();
 	}
 
-	public void setTime(long time) {
-		this.time = time;
+	public SecureUser getUser() {
+		return user;
 	}
+
+	public void setUser(SecureUser user) {
+		this.user = user;
+	}
+
 }

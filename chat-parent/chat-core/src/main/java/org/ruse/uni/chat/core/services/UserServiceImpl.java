@@ -3,14 +3,14 @@ package org.ruse.uni.chat.core.services;
 import java.util.Date;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.ruse.uni.chat.core.dao.UserDao;
 import org.ruse.uni.chat.core.entity.User;
+import org.ruse.uni.chat.core.events.UserPersistedEvent;
 import org.ruse.uni.chat.core.exceptions.ChatRuntimeException;
 import org.ruse.uni.chat.core.security.PasswordCredential;
-import org.ruse.uni.chat.core.security.SecureUser;
-import org.ruse.uni.chat.core.security.SecurityUtil;
 
 /**
  *
@@ -22,13 +22,19 @@ public class UserServiceImpl implements UserService {
 	@Inject
 	private UserDao userDao;
 
+	@Inject
+	private Event<UserPersistedEvent> userPersistedEvent;
+
 	@Override
-	public SecureUser register(SecureUser user, PasswordCredential credential) {
+	public User register(User user, PasswordCredential credential) {
 		if (user.getEmail() == null || user.getEmail().isEmpty()) {
 			throw new ChatRuntimeException("Email cannot be empty");
 		}
 		if (user.getUsername() == null || user.getUsername().isEmpty()) {
-			throw new ChatRuntimeException("username cannot be empty");
+			throw new ChatRuntimeException("Username cannot be empty");
+		}
+		if (credential.getPassword() == null || credential.getPassword().isEmpty()) {
+			throw new ChatRuntimeException("Password cannot be empty");
 		}
 		if (isEmailTaken(user.getEmail())) {
 			throw new ChatRuntimeException("User with '" + user.getEmail() + "' email already exists");
@@ -37,17 +43,20 @@ public class UserServiceImpl implements UserService {
 			throw new ChatRuntimeException("User with '" + user.getUsername() + " username already exists'");
 		}
 
-		User converted = SecurityUtil.convertSecureUsertToEntity(user, credential);
-		converted.setRegisteredOn(new Date());
-		userDao.save(converted);
-		return SecurityUtil.convertEntityToSecureUser(converted);
+		user.setPassword(credential.getPassword());
+		user.setRegisteredOn(new Date());
+		userDao.save(user);
+
+		userPersistedEvent.fire(new UserPersistedEvent(user));
+
+		return user;
 	}
 
 	@Override
-	public SecureUser validateCredentials(String username, String password) {
+	public User validateCredentials(String username, String password) {
 		User user = userDao.validateCredentials(username, password);
 		if (user != null) {
-			return new SecureUser(user);
+			return user;
 		}
 		return null;
 	}
@@ -63,21 +72,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public SecureUser getById(Long id) {
-		User user = userDao.findById(id);
-		return SecurityUtil.convertEntityToSecureUser(user);
+	public User getById(Long id) {
+		return userDao.findById(id);
 	}
 
 	@Override
-	public SecureUser getByUsername(String username) {
-		User user = userDao.findByUsername(username);
-		return SecurityUtil.convertEntityToSecureUser(user);
+	public User getByUsername(String username) {
+		return userDao.findByUsername(username);
 	}
 
 	@Override
-	public SecureUser getByEmail(String email) {
-		User user = userDao.findByEmail(email);
-		return SecurityUtil.convertEntityToSecureUser(user);
+	public User getByEmail(String email) {
+		return userDao.findByEmail(email);
 	}
 
 }

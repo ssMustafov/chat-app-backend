@@ -15,12 +15,13 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private JwtGenerator jwtGenerator;
 
 	@Override
-	public void initializeSocket(AtmosphereResourceFactory resourceFactory, AtmosphereResource resource) {
+	public SecureUser initializeSocket(AtmosphereResourceFactory resourceFactory, AtmosphereResource resource) {
 		// first check if the user was authenticated during initial handshake
 		SecureUser user = Util.extractUser(resourceFactory, resource, jwtGenerator);
 		if (user == null) {
 			throw new ChatRuntimeException("Not authenticated");
 		}
+		return user;
 	}
 
 }
