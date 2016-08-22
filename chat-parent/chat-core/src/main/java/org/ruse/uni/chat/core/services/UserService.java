@@ -1,5 +1,7 @@
 package org.ruse.uni.chat.core.services;
 
+import java.util.List;
+
 import org.ruse.uni.chat.core.entity.User;
 import org.ruse.uni.chat.core.security.PasswordCredential;
 
@@ -22,5 +24,7 @@ public interface UserService {
 	User getByUsername(String username);
 
 	User getByEmail(String email);
+
+	List<User> getAllUsers();
 
 }

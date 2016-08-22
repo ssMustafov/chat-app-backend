@@ -1,6 +1,7 @@
 package org.ruse.uni.chat.core.services;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -84,6 +85,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getByEmail(String email) {
 		return userDao.findByEmail(email);
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		return userDao.findAll();
 	}
 
 }
