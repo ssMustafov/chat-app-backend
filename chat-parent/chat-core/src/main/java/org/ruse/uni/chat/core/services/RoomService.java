@@ -22,4 +22,6 @@ public interface RoomService {
 
 	Room getById(Long id);
 
+	boolean canJoin(Long roomId, User user);
+
 }

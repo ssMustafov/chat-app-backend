@@ -1,5 +1,7 @@
 package org.ruse.uni.chat.websocket;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.atmosphere.config.service.Disconnect;
@@ -26,12 +28,20 @@ public class ChatEndpoint {
 	@Inject
 	private WebSocketService webSocketService;
 
-	@Ready(encoders = { ChatProtocolEncoder.class })
+	@Ready
 	public void onReady(AtmosphereResource resource) {
-		webSocketService.initializeSocket(resourceFactory, resource);
-
-		System.out.println("Room id: " + Util.getRoomId(resource));
-		System.out.println("Browser connected: " + resource.uuid());
+		boolean success = webSocketService.initializeSocket(resourceFactory, resource);
+		if (!success) {
+			try {
+				resource.getResponse().close();
+				resource.getRequest().destroy(true);
+			} catch (IOException e) {
+				System.out.println("Error closing connection: " + e.getMessage());
+			}
+		} else {
+			System.out.println("Room id: " + Util.getRoomId(resource));
+			System.out.println("Browser connected: " + resource.uuid());
+		}
 	}
 
 	@Disconnect

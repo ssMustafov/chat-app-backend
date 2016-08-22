@@ -63,7 +63,7 @@ public class RoomServiceImpl implements RoomService {
 
 	/**
 	 * Adds every registered user to the default room.
-	 * 
+	 *
 	 * @param event
 	 *            the event for newly registered user
 	 */
@@ -74,6 +74,17 @@ public class RoomServiceImpl implements RoomService {
 		}
 
 		addUserToRoom(DEFAULT_ROOM_ID, user);
+	}
+
+	@Override
+	public boolean canJoin(Long roomId, User user) {
+		Room room = getById(roomId);
+		if (room == null) {
+			return false;
+		}
+		return room.getUsers()
+				.stream()
+				.anyMatch(u -> u.getId().equals(user.getId()));
 	}
 
 }

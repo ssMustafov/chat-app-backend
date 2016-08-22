@@ -31,7 +31,7 @@ public class JwtGenerator {
 	}
 
 	public String generate(SecureUser user) {
-		return Jwts.builder().setSubject(user.getUsername()).setIssuer(user.getEmail())
+		return Jwts.builder().setSubject(user.getUsername()).setIssuer(user.getEmail()).setId(user.getId().toString())
 				.setIssuedAt(user.getRegisteredOn()).signWith(SignatureAlgorithm.HS512, jwtKey).compact();
 	}
 
@@ -40,6 +40,7 @@ public class JwtGenerator {
 		Claims claims = parsedClaimsJws.getBody();
 
 		org.ruse.uni.chat.core.entity.User user = new org.ruse.uni.chat.core.entity.User();
+		user.setId(Long.valueOf(claims.getId()));
 		user.setEmail(claims.getIssuer());
 		user.setUsername(claims.getSubject());
 		user.setRegisteredOn(claims.getIssuedAt());
