@@ -20,10 +20,7 @@ public class UserDao extends BaseDao<User> {
 	@Override
 	@Transactional(TxType.REQUIRED)
 	public User update(User user) {
-		User updated = findById(User.class, user.getId());
-		updated.setPassword(user.getPassword());
-		updated.setUsername(user.getUsername());
-		return updated;
+		return getEntityManager().merge(user);
 	}
 
 	@Override

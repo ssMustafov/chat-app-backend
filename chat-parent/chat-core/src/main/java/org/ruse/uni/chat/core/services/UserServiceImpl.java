@@ -92,4 +92,9 @@ public class UserServiceImpl implements UserService {
 		return userDao.findAll();
 	}
 
+	@Override
+	public User update(User user) {
+		return userDao.update(user);
+	}
+
 }

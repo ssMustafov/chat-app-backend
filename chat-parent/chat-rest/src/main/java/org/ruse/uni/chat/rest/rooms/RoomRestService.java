@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -72,6 +73,80 @@ public class RoomRestService {
 			return Response.status(Status.BAD_REQUEST).entity(json.toString()).build();
 		}
 		return Response.ok(room.toJson(true).toString()).build();
+	}
+
+	@POST
+	@Path("/add/user")
+	public Response addUserToRoom(String data) {
+		if (data == null || data.isEmpty()) {
+			JSONObject json = new JSONObject();
+			json.put("message", "Empty json payload passed");
+			Response.status(Status.BAD_REQUEST).entity(json.toString()).build();
+		}
+		JSONObject json = new JSONObject(data);
+		String roomId = json.getString("roomId");
+		long userId = json.getLong("userId");
+		Room room = null;
+
+		try {
+			User user = userService.getById(userId);
+			room = roomService.addUserToRoom(Long.valueOf(roomId), user);
+		} catch (Exception e) {
+			System.out.println("Failed to add user to room: " + e.getMessage());
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+
+		return Response.ok().entity(room.toJson(true).toString()).build();
+	}
+
+	@POST
+	@Path("/remove/user")
+	public Response removeUserFromRoom(String data) {
+		if (data == null || data.isEmpty()) {
+			JSONObject json = new JSONObject();
+			json.put("message", "Empty json payload passed");
+			Response.status(Status.BAD_REQUEST).entity(json.toString()).build();
+		}
+		JSONObject json = new JSONObject(data);
+		String roomId = json.getString("roomId");
+		long userId = json.getLong("userId");
+		Room room = null;
+
+		try {
+			User user = userService.getById(userId);
+			room = roomService.removeUserFromRoom(Long.valueOf(roomId), user);
+		} catch (Exception e) {
+			System.out.println("Failed to remove user from room: " + e.getMessage());
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+
+		return Response.ok().entity(room.toJson(true).toString()).build();
+	}
+
+	@PUT
+	public Response updateRoom(String data) {
+		try {
+			JSONObject requestJson = new JSONObject(data);
+			long roomId = requestJson.getLong("roomId");
+			String name = requestJson.getString("name");
+			String description = "";
+			if (requestJson.has("description")) {
+				description = requestJson.getString("description");
+			}
+
+			Room room = roomService.getById(roomId);
+			room.setName(name);
+			room.setDescription(description);
+			roomService.updateRoom(room);
+
+			return Response.ok(room.toJson(true).toString()).build();
+		} catch (Exception e) {
+			System.out.println("Cannot update room: " + e.getMessage());
+
+			JSONObject json = new JSONObject();
+			json.put("message", e.getMessage());
+			return Response.status(Status.BAD_REQUEST).entity(json.toString()).build();
+		}
 	}
 
 	@POST

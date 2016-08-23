@@ -20,11 +20,7 @@ public class RoomDao extends BaseDao<Room> {
 	@Override
 	@Transactional(TxType.REQUIRED)
 	public Room update(Room instance) {
-		Room updated = findById(Room.class, instance.getId());
-		updated.setDescription(instance.getDescription());
-		updated.setName(instance.getName());
-		updated.setUsers(instance.getUsers());
-		return updated;
+		return getEntityManager().merge(instance);
 	}
 
 	@Override

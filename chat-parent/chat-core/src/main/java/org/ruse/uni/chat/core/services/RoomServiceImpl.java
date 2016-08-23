@@ -42,18 +42,20 @@ public class RoomServiceImpl implements RoomService {
 
 	@Override
 	@Transactional(TxType.REQUIRED)
-	public void addUserToRoom(Long id, User user) {
+	public Room addUserToRoom(Long id, User user) {
 		Room room = getById(id);
 		room.getUsers().add(user);
 		saveRoom(room);
+		return room;
 	}
 
 	@Override
 	@Transactional(TxType.REQUIRED)
-	public void removeUserFromRoom(Long id, User user) {
+	public Room removeUserFromRoom(Long id, User user) {
 		Room room = getById(id);
 		room.getUsers().removeIf(u -> u.getId().equals(user.getId()));
 		saveRoom(room);
+		return room;
 	}
 
 	@Override
@@ -82,9 +84,12 @@ public class RoomServiceImpl implements RoomService {
 		if (room == null) {
 			return false;
 		}
-		return room.getUsers()
-				.stream()
-				.anyMatch(u -> u.getId().equals(user.getId()));
+		return room.getUsers().stream().anyMatch(u -> u.getId().equals(user.getId()));
+	}
+
+	@Override
+	public Room updateRoom(Room room) {
+		return roomDao.update(room);
 	}
 
 }

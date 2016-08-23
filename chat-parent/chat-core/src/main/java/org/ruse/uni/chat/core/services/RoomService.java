@@ -16,12 +16,13 @@ public interface RoomService {
 
 	Room deleteRoom(Long id);
 
-	void addUserToRoom(Long id, User user);
+	Room addUserToRoom(Long id, User user);
 
-	void removeUserFromRoom(Long id, User user);
+	Room removeUserFromRoom(Long id, User user);
 
 	Room getById(Long id);
 
 	boolean canJoin(Long roomId, User user);
 
+	Room updateRoom(Room room);
 }
