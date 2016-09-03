@@ -97,4 +97,29 @@ public class UserServiceImpl implements UserService {
 		return userDao.update(user);
 	}
 
+	@Override
+	public User changePassword(Long id, String currentPassword, String newPassword) {
+		User user = getById(id);
+		if (user == null) {
+			throw new ChatRuntimeException("User not found: " + id);
+		}
+		if (currentPassword == null || currentPassword.isEmpty()) {
+			throw new ChatRuntimeException("Current password is empty");
+		}
+		if (newPassword == null || newPassword.isEmpty()) {
+			throw new ChatRuntimeException("New password is empty");
+		}
+		if (currentPassword.equals(newPassword)) {
+			throw new ChatRuntimeException("The new and current password is the same");
+		}
+		user = validateCredentials(user.getUsername(), currentPassword);
+		if (user == null) {
+			throw new ChatRuntimeException("Wrong credential");
+		}
+
+		user.setPassword(newPassword);
+		update(user);
+		return user;
+	}
+
 }

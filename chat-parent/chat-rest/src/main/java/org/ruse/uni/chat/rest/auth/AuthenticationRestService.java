@@ -14,6 +14,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 
 import org.json.JSONObject;
 import org.ruse.uni.chat.core.entity.User;
@@ -40,6 +41,9 @@ public class AuthenticationRestService {
 	@Inject
 	private Event<UserAuthenticatedEvent> userAuthenticatedEvent;
 
+	@Context
+	private SecurityContext securityContext;
+
 	@POST
 	@PublicRest
 	public Response authenticate(Credentials credentials) {
@@ -64,6 +68,25 @@ public class AuthenticationRestService {
 
 	private String issueToken(SecureUser user) {
 		return jwtGenerator.generate(user);
+	}
+
+	@POST
+	@Path("change-password")
+	public Response changePassword(String data) {
+		JSONObject json = new JSONObject(data);
+		String currentPassword = json.getString("currentPassword");
+		String newPassword = json.getString("newPassword");
+
+		try {
+			String currentUsername = securityContext.getUserPrincipal().getName();
+			User user = userService.getByUsername(currentUsername);
+			userService.changePassword(user.getId(), currentPassword, newPassword);
+			return Response.ok().build();
+		} catch (Exception e) {
+			JSONObject error = new JSONObject();
+			error.put("message", e.getMessage());
+			return Response.status(Status.BAD_REQUEST).entity(error.toString()).build();
+		}
 	}
 
 	@GET

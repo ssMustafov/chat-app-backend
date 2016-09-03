@@ -22,8 +22,8 @@ public class PasswordHashConverter implements AttributeConverter<String, String>
 
 	@Override
 	public String convertToEntityAttribute(String dbData) {
-		// do not decrypt
-		return dbData;
+		CryptographyService cryptographyService = CDI.current().select(CryptographyService.class).get();
+		return cryptographyService.decrypt(dbData);
 	}
 
 }

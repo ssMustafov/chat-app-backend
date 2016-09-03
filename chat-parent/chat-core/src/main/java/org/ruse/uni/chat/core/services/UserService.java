@@ -23,6 +23,8 @@ public interface UserService {
 
 	User getByUsername(String username);
 
+	User changePassword(Long id, String currentPassword, String newPassword);
+
 	User getByEmail(String email);
 
 	User update(User user);
