@@ -12,6 +12,7 @@ import org.atmosphere.config.service.Singleton;
 import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.AtmosphereResourceEvent;
 import org.atmosphere.cpr.AtmosphereResourceFactory;
+import org.ruse.uni.chat.core.security.SecureUser;
 import org.ruse.uni.chat.websocket.services.WebSocketService;
 import org.ruse.uni.chat.websocket.util.Util;
 
@@ -22,6 +23,8 @@ import org.ruse.uni.chat.websocket.util.Util;
 @ManagedService(path = "/chat/{room: [0-9]+}")
 public class ChatEndpoint {
 
+	private static final String USER_ID_KEY = "userId";
+
 	@Inject
 	private AtmosphereResourceFactory resourceFactory;
 
@@ -30,8 +33,8 @@ public class ChatEndpoint {
 
 	@Ready
 	public void onReady(AtmosphereResource resource) {
-		boolean success = webSocketService.initializeSocket(resourceFactory, resource);
-		if (!success) {
+		SecureUser user = webSocketService.initializeSocket(resourceFactory, resource);
+		if (user == null) {
 			try {
 				resource.getResponse().close();
 				resource.getRequest().destroy(true);
@@ -39,8 +42,10 @@ public class ChatEndpoint {
 				System.out.println("Error closing connection: " + e.getMessage());
 			}
 		} else {
-			System.out.println("Room id: " + Util.getRoomId(resource));
+			Long roomId = Long.valueOf(Util.getRoomId(resource));
+			System.out.println("Room id: " + roomId);
 			System.out.println("Browser connected: " + resource.uuid());
+			resource.getRequest().localAttributes().put(USER_ID_KEY, user.getId());
 		}
 	}
 
@@ -54,8 +59,11 @@ public class ChatEndpoint {
 	}
 
 	@Message(encoders = { ChatProtocolEncoder.class }, decoders = { ChatProtocolDecoder.class })
-	public ChatProtocol onMessage(ChatProtocol protocol) {
+	public ChatProtocol onMessage(AtmosphereResource resource, ChatProtocol protocol) {
 		System.out.println(protocol);
+
+		String roomId = Util.getRoomId(resource);
+		webSocketService.fireEvent(roomId, protocol);
 		return protocol;
 	}
 

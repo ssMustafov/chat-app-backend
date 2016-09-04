@@ -37,6 +37,11 @@
 			<artifactId>chat-rest</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.ruse.uni.chat.solr</groupId>
+			<artifactId>chat-solr</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
