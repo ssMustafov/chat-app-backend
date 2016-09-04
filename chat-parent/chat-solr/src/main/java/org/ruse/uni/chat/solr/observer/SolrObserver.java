@@ -8,6 +8,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.ruse.uni.chat.core.events.MessageSentEvent;
 import org.ruse.uni.chat.core.message.Message;
 import org.ruse.uni.chat.solr.SolrConnector;
+import org.ruse.uni.chat.solr.util.SolrUtil;
 
 /**
  * @author sinan
@@ -20,19 +21,8 @@ public class SolrObserver {
 
 	public void onMessageSent(@Observes MessageSentEvent event) {
 		Message message = event.getMessage();
-		SolrInputDocument solrDocument = messageToSolrDocument(message);
+		SolrInputDocument solrDocument = SolrUtil.messageToSolrDocument(message);
 		solrConnector.insertOrUpdate(solrDocument);
-	}
-
-	private static SolrInputDocument messageToSolrDocument(Message message) {
-		SolrInputDocument document = new SolrInputDocument();
-
-		document.addField("userId", message.getUserId());
-		document.addField("roomId", message.getRoomId());
-		document.addField("message", message.getMessage());
-		document.addField("sentOn", message.getSentOn().getTime());
-
-		return document;
 	}
 
 }
