@@ -11,4 +11,6 @@ public interface MessageService {
 
 	List<Message> getMessages(Long roomId, int start, int rows);
 
+	List<Message> searchTerm(Long roomId, String term);
+
 }

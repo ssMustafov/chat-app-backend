@@ -36,11 +36,15 @@ public class SolrMessageService implements MessageService {
 		query.set(CommonParams.Q, "roomId:" + roomId);
 		query.set(CommonParams.START, getDefaultStart(start));
 		query.set(CommonParams.ROWS, getDefaultRows(rows));
-		query.addOrUpdateSort("sentOn", ORDER.asc);
+		query.addOrUpdateSort("sentOn", ORDER.desc);
 
+		return getResult(query);
+	}
+
+	private List<Message> getResult(SolrQuery query) {
 		QueryResponse queryResponse = solrConnector.queryWithGet(query);
 		SolrDocumentList results = queryResponse.getResults();
-		List<Message> messages = new ArrayList<>();
+		List<Message> messages = new ArrayList<>(results.size() + 1);
 
 		for (SolrDocument solrDocument : results) {
 			messages.add(SolrUtil.solrDocumentToMessage(solrDocument));
@@ -61,6 +65,21 @@ public class SolrMessageService implements MessageService {
 			return DEFAULT_ROWS;
 		}
 		return rows;
+	}
+
+	@Override
+	public List<Message> searchTerm(Long roomId, String term) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("message:*").append(term).append("*").append(" AND ").append("roomId:").append(roomId);
+
+		SolrQuery query = new SolrQuery();
+		query.setFields("*");
+		query.set(CommonParams.Q, builder.toString());
+		query.set(CommonParams.START, DEFAULT_START);
+		query.set(CommonParams.ROWS, 100);
+		query.addOrUpdateSort("sentOn", ORDER.desc);
+
+		return getResult(query);
 	}
 
 }
