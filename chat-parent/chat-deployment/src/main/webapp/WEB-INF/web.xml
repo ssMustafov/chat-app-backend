@@ -12,4 +12,10 @@
 		<servlet-name>AtmosphereServlet</servlet-name>
 		<url-pattern>/chat/*</url-pattern>
 	</servlet-mapping>
+	
+	<listener>
+	    <listener-class>
+	      org.apache.commons.fileupload.servlet.FileCleanerCleanup
+	    </listener-class>
+  	</listener>
 </web-app>

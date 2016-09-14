@@ -26,4 +26,11 @@ public interface DbQueries {
 	String GET_ROOMS_FOR_USER_NAME = "GET_ROOMS_FOR_USER";
 	String GET_ROOMS_FOR_USER_QUERY = "SELECT room FROM chat_room room INNER JOIN room.users uid WHERE uid = :user ";
 
+	// file
+	String GET_ALL_FILES_NAME = "GET_ALL_FILES";
+	String GET_ALL_FILES_QUERY = "SELECT file FROM chat_file file";
+
+	String GET_FILES_FOR_ROOM_NAME = "GET_FILES_FOR_ROOM";
+	String GET_FILES_FOR_ROOM_QUERY = "SELECT file FROM chat_file file WHERE file.room = :id";
+
 }
