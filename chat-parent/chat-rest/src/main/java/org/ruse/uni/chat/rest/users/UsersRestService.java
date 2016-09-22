@@ -45,6 +45,7 @@ public class UsersRestService {
 		JSONObject json = new JSONObject(data);
 		String email = JsonUtil.getString("email", json);
 		String name = JsonUtil.getString("name", json);
+		String image = JsonUtil.getString("image", json);
 		boolean set = false;
 
 		try {
@@ -55,6 +56,10 @@ public class UsersRestService {
 			}
 			if (name != null && !name.isEmpty()) {
 				user.setName(name);
+				set = true;
+			}
+			if (image != null && !image.isEmpty()) {
+				user.setImage(image);
 				set = true;
 			}
 			if (set) {

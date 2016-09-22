@@ -45,6 +45,9 @@ public class User extends BaseEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date registeredOn;
 
+	@Column(columnDefinition = "text")
+	private String image;
+
 	public Date getRegisteredOn() {
 		return registeredOn;
 	}
@@ -136,6 +139,14 @@ public class User extends BaseEntity {
 				.append(email).append(", name=").append(name).append(", registeredOn=").append(registeredOn)
 				.append("]");
 		return builder.toString();
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 }

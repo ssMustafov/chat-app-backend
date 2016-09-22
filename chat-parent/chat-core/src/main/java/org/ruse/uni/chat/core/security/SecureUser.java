@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.json.JSONObject;
 import org.ruse.uni.chat.core.entity.User;
+import org.ruse.uni.chat.core.util.JsonUtil;
 
 /**
  * Represents user with not sensitive fields and only getters.
@@ -17,6 +18,7 @@ public class SecureUser {
 	private String name;
 	private String email;
 	private Date registeredOn;
+	private String image;
 
 	public static final SecureUser SYSTEM_USER;
 
@@ -33,6 +35,7 @@ public class SecureUser {
 		name = user.getName();
 		email = user.getEmail();
 		registeredOn = user.getRegisteredOn();
+		image = user.getImage();
 	}
 
 	public JSONObject toJson() {
@@ -42,6 +45,7 @@ public class SecureUser {
 		json.put("name", name);
 		json.put("email", email);
 		json.put("registeredOn", registeredOn.getTime());
+		json.put("image", image);
 		return json;
 	}
 
@@ -52,6 +56,10 @@ public class SecureUser {
 		user.setName(json.getString("name"));
 		user.setEmail(json.getString("email"));
 		user.setRegisteredOn(new Date(json.getLong("registeredOn")));
+		String image = JsonUtil.getString("image", json);
+		if (image != null && !image.isEmpty()) {
+			user.setImage(image);
+		}
 		return SecurityUtil.convertEntityToSecureUser(user);
 	}
 
@@ -108,6 +116,10 @@ public class SecureUser {
 
 	public Date getRegisteredOn() {
 		return registeredOn;
+	}
+
+	public String getImage() {
+		return image;
 	}
 
 }
