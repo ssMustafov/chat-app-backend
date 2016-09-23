@@ -3,6 +3,7 @@ package org.ruse.uni.chat.core.services;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -11,8 +12,11 @@ import javax.transaction.Transactional.TxType;
 import org.ruse.uni.chat.core.dao.RoomDao;
 import org.ruse.uni.chat.core.entity.Room;
 import org.ruse.uni.chat.core.entity.User;
+import org.ruse.uni.chat.core.events.UserJoinedRoomEvent;
+import org.ruse.uni.chat.core.events.UserLeftRoomEvent;
 import org.ruse.uni.chat.core.events.UserPersistedEvent;
 import org.ruse.uni.chat.core.exceptions.ChatRuntimeException;
+import org.ruse.uni.chat.core.security.SecurityUtil;
 
 /**
  * @author sinan
@@ -24,6 +28,12 @@ public class RoomServiceImpl implements RoomService {
 
 	@Inject
 	private RoomDao roomDao;
+
+	@Inject
+	private Event<UserJoinedRoomEvent> userJoinedRoomEvent;
+
+	@Inject
+	private Event<UserLeftRoomEvent> userLeftRoomEvent;
 
 	@Override
 	public List<Room> getRooms(User user) {
@@ -46,6 +56,9 @@ public class RoomServiceImpl implements RoomService {
 		Room room = getById(id);
 		room.getUsers().add(user);
 		saveRoom(room);
+
+		userJoinedRoomEvent.fire(new UserJoinedRoomEvent(id.toString(), SecurityUtil.convertEntityToSecureUser(user)));
+
 		return room;
 	}
 
@@ -55,6 +68,9 @@ public class RoomServiceImpl implements RoomService {
 		Room room = getById(id);
 		room.getUsers().removeIf(u -> u.getId().equals(user.getId()));
 		saveRoom(room);
+
+		userLeftRoomEvent.fire(new UserLeftRoomEvent(id.toString(), SecurityUtil.convertEntityToSecureUser(user)));
+
 		return room;
 	}
 

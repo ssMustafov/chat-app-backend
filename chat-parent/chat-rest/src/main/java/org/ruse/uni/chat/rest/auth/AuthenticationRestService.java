@@ -18,12 +18,12 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.json.JSONObject;
 import org.ruse.uni.chat.core.entity.User;
+import org.ruse.uni.chat.core.events.UserAuthenticatedEvent;
 import org.ruse.uni.chat.core.security.PasswordCredential;
 import org.ruse.uni.chat.core.security.SecureUser;
 import org.ruse.uni.chat.core.security.SecurityUtil;
 import org.ruse.uni.chat.core.services.UserService;
 import org.ruse.uni.chat.rest.annotations.PublicRest;
-import org.ruse.uni.chat.rest.events.UserAuthenticatedEvent;
 import org.ruse.uni.chat.rest.exceptions.AuthenticationException;
 import org.ruse.uni.chat.security.jwt.JwtGenerator;
 
@@ -92,12 +92,15 @@ public class AuthenticationRestService {
 	@GET
 	@Path("/me")
 	public Response currentUser(@Context HttpHeaders headers) {
+		SecureUser user = extractUserFromHeader(headers);
+		return Response.ok(user.toJson().toString()).build();
+	}
+
+	private SecureUser extractUserFromHeader(HttpHeaders headers) {
 		String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
 		String token = authorizationHeader.substring("Bearer".length()).trim();
 		User currentUser = userService.getByUsername(jwtGenerator.parse(token).getUsername());
-		SecureUser user = SecurityUtil.convertEntityToSecureUser(currentUser);
-
-		return Response.ok(user.toJson().toString()).build();
+		return SecurityUtil.convertEntityToSecureUser(currentUser);
 	}
 
 	@POST

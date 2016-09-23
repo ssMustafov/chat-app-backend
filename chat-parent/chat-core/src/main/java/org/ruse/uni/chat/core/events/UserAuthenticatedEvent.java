@@ -1,4 +1,4 @@
-package org.ruse.uni.chat.rest.events;
+package org.ruse.uni.chat.core.events;
 
 import org.ruse.uni.chat.core.security.SecureUser;
 

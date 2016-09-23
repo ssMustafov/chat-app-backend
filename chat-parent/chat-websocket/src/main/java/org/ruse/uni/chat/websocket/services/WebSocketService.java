@@ -11,4 +11,6 @@ public interface WebSocketService {
 
 	void fireEvent(String roomId, ChatProtocol protocol);
 
+	SecureUser extractUser(AtmosphereResourceFactory resourceFactory, AtmosphereResource resource);
+
 }
