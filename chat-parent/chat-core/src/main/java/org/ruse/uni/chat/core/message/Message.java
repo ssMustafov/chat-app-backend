@@ -54,7 +54,9 @@ public class Message implements Serializable {
 		json.put("roomId", roomId);
 		json.put("message", message);
 		json.put("sentOn", sentOn.getTime());
-		json.put("user", user.toJson());
+		if (user != null) {
+			json.put("user", user.toJson());
+		}
 		return json;
 	}
 
